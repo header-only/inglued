@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project (inclusive VERSION "0.0.1")
 
-#set (CMAKE_CXX_STANDARD 14)
-add_compile_options(-std=c++14)
+if(MSVC)
+  set(CMAKE_CXX_STANDARD 14)
+else()
+  add_compile_options(-std=c++14)
+endif()
 
 if(UNIX AND NOT APPLE)
   set(LINUX TRUE)
@@ -23,7 +26,7 @@ find_package(Threads REQUIRED)
 
 # Boost
 find_package(Boost 1.61 COMPONENTS system filesystem)
-include_directories (AFTER ${Boost_INCLUDE_DIRS})
+include_directories(AFTER ${Boost_INCLUDE_DIRS})
 
 
 # Shippedwith
