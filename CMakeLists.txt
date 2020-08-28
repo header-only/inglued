@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.0.0)
 project (inclusive VERSION "0.0.1")
 
-#set (CMAKE_CXX_STANDARD 14)
-add_compile_options(-std=c++14)
+if(MSVC)
+  set(CMAKE_CXX_STANDARD 14)
+  # avoid the boost warning, it will disable boost from using IOCP and newer APIs.
+  add_definitions(-D_WIN32_WINNT=0x0601)
+else()
+  add_compile_options(-std=c++14)
+endif()
 
 if(UNIX AND NOT APPLE)
   set(LINUX TRUE)
@@ -22,8 +27,20 @@ find_package(Threads REQUIRED)
 
 
 # Boost
-find_package(Boost 1.61 COMPONENTS system filesystem)
-include_directories (AFTER ${Boost_INCLUDE_DIRS})
+if(MSVC)
+  find_package(Boost 1.73.0) 
+else()
+  find_package(Boost 1.73.0 COMPONENTS system filesystem)
+endif()
+include_directories(AFTER ${Boost_INCLUDE_DIRS})
+
+# Fix a link error with boost.
+if(MSVC)
+  file(COPY
+    ${Boost_SYSTEM_LIBRARY_RELEASE}
+    ${Boost_FILESYSTEM_LIBRARY_RELEASE}
+    DESTINATION ${CMAKE_BINARY_DIR})
+endif()
 
 
 # Shippedwith
