@@ -12,7 +12,7 @@
 #include <boost/process.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/system.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include <inglued/dep.hpp>
@@ -118,7 +118,7 @@ namespace inglued {
 
     std::future<std::string> buffer;
 
-    boost::asio::io_service ios;
+    boost::asio::io_context ios;
     bp::child c(bp::search_path("git"), std::string("subtree")
       , (fs::exists(fs::path("deps") / d.get_name()) ? "pull" : "add")
       , std::string("--prefix=") + "deps/" + d.get_name()
