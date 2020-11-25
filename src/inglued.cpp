@@ -12,6 +12,8 @@
 #include <boost/process.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/system.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <inglued/dep.hpp>
 #include <inglued/generate_cmakelists.hpp>
@@ -116,7 +118,7 @@ namespace inglued {
 
     std::future<std::string> buffer;
 
-    boost::asio::io_service ios;
+    boost::asio::io_context ios;
     bp::child c(bp::search_path("git"), std::string("subtree")
       , (fs::exists(fs::path("deps") / d.get_name()) ? "pull" : "add")
       , std::string("--prefix=") + "deps/" + d.get_name()
@@ -143,7 +145,7 @@ namespace inglued {
   inline void hikeup_deep_deps(map_deps_t& deps) {
 
     auto scan_inglued_dep = [](const fs::path& glue_file) {
-      auto deep_deps = read_deps(glue_file.native());
+      auto deep_deps = read_deps((const std::string &)glue_file.native());
 
       std::for_each(deep_deps.begin(), deep_deps.end(),
         [](auto& p) { p.second.transitive  = true;});
